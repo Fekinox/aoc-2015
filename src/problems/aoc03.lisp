@@ -1,0 +1,41 @@
+(in-package :aoc-problems)
+
+(defun direction (c)
+  (case c
+    (#\< '(-1 0))
+    (#\> '(1 0))
+    (#\^ '(0 -1))
+    (#\v '(0 1))
+    (t nil)))
+
+(defun aoc03 ()
+  (let ((silver 0)
+        (gold 0))
+    (let ((silver-presents (make-hash-table :test #'equal))
+          (gold-presents (make-hash-table :test #'equal))
+          (silver-pos '(0 0))
+          (gold-pos1 '(0 0))
+          (gold-pos2 '(0 0))
+          (turn t)
+          (l (read-line)))
+      (incf (gethash silver-pos silver-presents 0))
+      (incf (gethash gold-pos1 gold-presents 0))
+      (incf (gethash gold-pos2 gold-presents 0))
+      (dotimes (i (length l))
+        (let* ((v (aref l i))
+               (delta (direction v)))
+          (setf silver-pos (mapcar #'+ silver-pos delta))
+          (incf (gethash silver-pos silver-presents 0))
+
+          (if turn
+              (progn
+                (setf gold-pos1 (mapcar #'+ gold-pos1 delta))
+                (incf (gethash gold-pos1 gold-presents 0)))
+              (progn
+                (setf gold-pos2 (mapcar #'+ gold-pos2 delta))
+                (incf (gethash gold-pos2 gold-presents 0))))
+          (setf turn (not turn))))
+      (maphash #'(lambda (k v) (incf silver)) silver-presents)
+      (maphash #'(lambda (k v) (incf gold)) gold-presents))
+    (format *standard-output* "silver: ~A~%" silver)
+    (format *standard-output* "gold: ~A~%" gold)))

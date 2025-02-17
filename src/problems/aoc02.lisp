@@ -1,0 +1,17 @@
+(in-package :aoc-problems)
+
+(defun aoc02 ()
+  (let ((silver 0)
+        (gold 0))
+    (aoc-utils:dolines line *standard-input*
+      (destructuring-bind (x y z) (mapcar #'parse-integer (str:split "x" line))
+        (let* ((areas (list (* x y) (* y z) (* z x)))
+               (smallest-area (reduce #'min areas))
+               (double-areas (mapcar #'(lambda (x) (* x 2)) areas))
+               (volume (* x y z))
+               (perimeters (list (+ x x y y) (+ y y z z) (+ z z x x)))
+               (smallest-perimeter (reduce #'min perimeters)))
+          (incf silver (+ smallest-area (reduce #'+ double-areas)))
+          (incf gold (+ smallest-perimeter volume)))))
+    (format *standard-output* "silver: ~A~%" silver)
+    (format *standard-output* "gold: ~A~%" gold)))
